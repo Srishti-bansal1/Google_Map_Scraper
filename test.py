@@ -37,7 +37,6 @@ def main():
         page.goto("https://www.google.com", timeout=90000)
         page.wait_for_timeout(5000)
         
-        #page.locator('//input[@id="searchboxinput"]').fill(search_for)
         page.locator('//textarea').nth(0).fill(search_for)
         page.wait_for_timeout(3000)
 
@@ -48,26 +47,28 @@ def main():
         page.wait_for_timeout(5000)
         listings = page.locator('//div[contains(@class, "rllt__details")]').all()
         print(len(listings))
-        print(listings)
 
         business_list = BusinessList()
         for listing in listings[:5]:
             listing.click()
             page.wait_for_timeout(3000)
 
-            # name_xpath = '//h1[contains(@class, "fontHeadlineLarge")]/span[2]'
+            name_xpath = '//div[contains(@class, "xpdopen")]//h2[@data-attrid="title"]'
             address_xpath = '//div[@data-attrid="kc:/location/location:address"]'
-            # website_xpath = '//a[@data-item-id="authority"]//div[contains(@class, "fontBodyMedium")]'
-            # phone_number_xpath = '//button[contains(@data-item-id, "phone:tel:")]//div[contains(@class, "fontBodyMedium")]'
-
+            Rating_xpath = '//div[@data-attrid="kc:/local:lu attribute list"]//span[contains(@class, "NdWbqe Y0A0hc")]'
+            phone_number_xpath = '//div[@data-attrid="kc:/local:alt phone"]'
             business = Business()
         
-            # # business.name = page.locator(name_xpath).inner_text()
+            business.name = page.locator(name_xpath).inner_text()
+            print(business.name)
             business.address = page.locator(address_xpath).inner_text()
             print(business.address)
-            # # business.website = page.locator(website_xpath).inner_text()
-            # # business.phone_number = page.locator(phone_number_xpath).inner_text()
-
+            business.website = page.locator(Rating_xpath).inner_text()
+            print(business.website)
+            if page.locator(phone_number_xpath).count():
+                business.phone_number = page.locator(phone_number_xpath).inner_text()
+            print(business.phone_number)
+           
             business_list.business_list.append(business)
 
         business_list.save_to_excel("google_maps_data")
